@@ -188,4 +188,5 @@ Desenvolvido por **Gisele Gomes**
 ## 📄 Licença
 
 Este projeto está licenciado sob a **Licença MIT**.  
-Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Veja o arquivo [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/giselegomes431/API_campointeligente/blob/main/LICENSE)
+ para mais detalhes.
