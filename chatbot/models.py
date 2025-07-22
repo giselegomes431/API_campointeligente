@@ -1,3 +1,4 @@
+# chatbot/models.py
 from django.db import models
 
 # =======================
@@ -47,7 +48,6 @@ class Usuario(models.Model):
     estado = models.CharField(max_length=2, null=True, blank=True)
     data_cadastro = models.DateTimeField(auto_now_add=True)
     ultima_atividade = models.DateTimeField(null=True, blank=True)
-    # O contexto da conversa será armazenado aqui
     contexto = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
@@ -112,3 +112,32 @@ class Interacao(models.Model):
         verbose_name = "Interação"
         verbose_name_plural = "Interações"
         db_table = 'tb_interacoes'
+
+# ==================================
+# NOVA TABELA DE PROMPTS DO CHATBOT
+# ==================================
+class Prompt(models.Model):
+    """
+    Armazena os textos (prompts) utilizados pelo chatbot.
+    """
+    key = models.CharField(
+        max_length=100, 
+        primary_key=True, 
+        help_text="Chave única para identificar o prompt no código (ex: 'welcome_message')"
+    )
+    text = models.TextField(
+        help_text="O texto que será enviado para o usuário. Pode conter {placeholders}."
+    )
+    description = models.CharField(
+        max_length=255, 
+        blank=True, 
+        help_text="Descrição interna para explicar onde este prompt é usado."
+    )
+
+    def __str__(self):
+        return self.key
+        
+    class Meta:
+        verbose_name = "Prompt do Chatbot"
+        verbose_name_plural = "Prompts do Chatbot"
+        db_table = 'tb_prompts'
