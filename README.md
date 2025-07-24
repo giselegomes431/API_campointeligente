@@ -55,7 +55,7 @@ python -m venv venv
 
 # Windows:
 .
-env\Scripts ctivate
+venv\Scripts\activate
 
 # macOS/Linux:
 source venv/bin/activate
