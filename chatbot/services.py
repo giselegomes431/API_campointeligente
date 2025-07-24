@@ -219,7 +219,7 @@ class ChatbotService:
                 response_text = await self._get_prompt('main_menu_v2')
             await self.save_user(user)
 
-        # --- FLUXO DE ONBOARDING (se não estiver em nenhum estado) ---
+        # --- FLUXO DE ONBOARDING se não estiver em nenhum estado ---
         elif not user.nome:
             if not context.get('awaiting_initial_name'):
                 user.contexto = {'awaiting_initial_name': True}
