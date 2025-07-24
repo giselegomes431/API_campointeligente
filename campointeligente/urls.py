@@ -37,7 +37,11 @@ urlpatterns = [
     re_path(r'^api/v1/swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('api/v1/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/v1/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    
+    # linha para as rotas do painel
+    path('api/v1/panel/', include('panel.urls')), 
 ]
+
 
 # --- CONFIGURAÇÃO PARA SERVIR ARQUIVOS ESTÁTICOS EM AMBIENTE DE DESENVOLVIMENTO ---
 # Este bloco é CRUCIAL para que o Redoc e outros arquivos estáticos sejam carregados
