@@ -141,3 +141,18 @@ class Prompt(models.Model):
         verbose_name = "Prompt do Chatbot"
         verbose_name_plural = "Prompts do Chatbot"
         db_table = 'tb_prompts'
+        
+class State(models.Model):
+    """
+    Armazena os estados brasileiros e suas siglas.
+    """
+    abbreviation = models.CharField(max_length=2, primary_key=True)
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Estado"
+        verbose_name_plural = "Estados"
+        db_table = 'tb_states'
