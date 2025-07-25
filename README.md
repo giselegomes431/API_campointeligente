@@ -18,6 +18,7 @@ Este repositório contém o backend do projeto **Campo Inteligente**, desenvolvi
 ✅ Módulo Painel de Controle (panel):
 - Endpoints de API seguros para autenticação de administradores.
 - Funcionalidade completa de troca e recuperação de senha via API.
+- Gestão de Organizações e Administradores (Criar, Listar, Editar, Excluir) por superusuários.
 - Rotas protegidas para fornecer dados de usuários e outras métricas ao frontend.
 
 ✅ Gerenciamento de Dados:
@@ -171,13 +172,19 @@ Acesse: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 | **Chatbot**                                                                        |
 | Webhook WhatsApp (POST)               | `/api/v1/chatbot/webhook/`                 |
 | Webchat (POST)                        | `/api/v1/chatbot/webchat/`                 |
-| **Painel de Controle**                                                             |
+| **Painel de Controle: Autenticação**                                               |
 | Login de Administrador (POST)         | `/api/v1/panel/login/`                     |
 | Logout de Administrador (POST)        | `/api/v1/panel/logout/`                    |
 | Dados do Usuário Logado (GET)         | `/api/v1/panel/user-data/`                 |
 | Trocar Senha (POST, autenticado)      | `/api/v1/panel/password/change/`           |
 | Pedido de Recuperação de Senha (POST) | `/api/v1/panel/password/reset/`            |
 | Confirmar Nova Senha (POST)           | `/api/v1/panel/password/reset/confirm/`    |
+| **Painel de Controle: Gestão**                                                     |
+| Listar/Criar Organizações (GET, POST) | `/api/v1/panel/organizacoes/`              |
+| Detalhe/Editar/Excluir Organização (GET, PUT, PATCH, DELETE) | `/api/v1/panel/organizacoes/<id>/`      |
+| Listar Administradores (GET)          | `/api/v1/panel/administradores/list/`                 |
+| Criar Administrador (POST)            | `/api/v1/panel/administradores/create/`    |
+| Detalhe/Editar/Excluir Administrador (GET, PUT, PATCH, DELETE) | `/api/v1/panel/administradores/<id>/`   |
 | **Documentação**                                                                   |
 | Swagger (UI interativa)               | `/api/v1/swagger/`                         |
 | Redoc (Documentação limpa)            | `/api/v1/redoc/`                           |
