@@ -164,14 +164,14 @@ Acesse: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 | Recurso                         | Endpoint                                   |
 |---------------------------------|--------------------------------------------|
-| **Chatbot**                     |                                            |
+| **Chatbot**                                                                  |
 | Webhook WhatsApp (POST)         | `/api/v1/chatbot/webhook/`                 |
 | Webchat (POST)                  | `/api/v1/chatbot/webchat/`                 |
-| **Painel de Controle**          |                                            |
+| **Painel de Controle**                                                       |
 | Login de Administrador (POST)   | `/api/v1/panel/login/`                     |
 | Logout de Administrador (POST)  | `/api/v1/panel/logout/`                    |
 | Dados do Usuário Logado (GET)   | `/api/v1/panel/user-data/`                 |
-| **Documentação**                |                                            |
+| **Documentação**                                                             |
 | Swagger (UI interativa)         | `/api/v1/swagger/`                         |
 | Redoc (Documentação limpa)      | `/api/v1/redoc/`                           |
 
