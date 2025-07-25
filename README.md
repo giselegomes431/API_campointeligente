@@ -1,17 +1,27 @@
 # 🌾 API Campo Inteligente (Backend Django)
 
-Este repositório contém o backend do projeto **Campo Inteligente**, desenvolvido em **Django** com **Django REST Framework**. A API é responsável por processar mensagens do chatbot, integrar serviços externos (OpenAI, OpenWeather, Evolution API para WhatsApp) e gerenciar os dados dos usuários agrícolas.
+Este repositório contém o backend do projeto **Campo Inteligente**, desenvolvido em **Django** com **Django REST Framework**. A API serve a duas funcionalidades principais:
 
+1. **Chatbot Inteligente**: Processa mensagens de múltiplos canais (web e WhatsApp), integra-se com serviços externos (OpenAI, OpenWeather) e gerencia os dados dos usuários agrícolas.
+
+2. **Painel de Controle**: Fornece endpoints seguros para um painel administrativo (desenvolvido separadamente em Next.js) visualizar dados, gerir usuários e extrair insights.
 ---
 
 ## 🚀 Funcionalidades Principais
 
-- ✅ Integração com chatbot (webchat e WhatsApp via Evolution API)
-- ✅ Registro e atualização de usuários
-- ✅ Respostas inteligentes com a API da OpenAI
-- ✅ Previsão do tempo com dados do OpenWeather
-- ✅ Comunicação automatizada via WhatsApp
-- ✅ Estrutura extensível para novas funções (ex: controle de rebanho, estoque agrícola, simulações)
+✅ Módulo Chatbot:
+- Integração com webchat e WhatsApp (via Evolution API).
+- Fluxo de conversa dinâmico com mensagens gerenciadas pelo banco de dados.
+- Respostas inteligentes com a API da OpenAI.
+- Previsão do tempo com dados do OpenWeather.
+
+✅ Módulo Painel de Controle (panel):
+- Endpoints de API seguros para autenticação de administradores.
+- Rotas protegidas para fornecer dados de usuários e outras métricas ao frontend.
+
+✅ Gerenciamento de Dados:
+- Registro e atualização de usuários e suas propriedades.
+- Estrutura extensível para novas funções (ex: controle de rebanho, estoque, safras).
 
 ---
 
@@ -28,7 +38,6 @@ Este repositório contém o backend do projeto **Campo Inteligente**, desenvolvi
 - **drf-yasg** (documentação Swagger/OpenAPI)
 - **django-cors-headers** (suporte a CORS)
 - **psycopg2-binary** (conector PostgreSQL)
-- *(opcional)* **djangorestframework-simplejwt** (autenticação JWT)
 
 ---
 
@@ -119,13 +128,21 @@ EVOLUTION_INSTANCE_NAME='nome_da_instancia'
 Certifique-se de que o banco está criado e acessível:
 
 ```bash
-python manage.py makemigrations chatbot
+python manage.py makemigrations
 python manage.py migrate
 ```
 
 ---
 
-### 6. Coleta de Arquivos Estáticos
+### 6. Crie um Superusuário (para o Painel)
+
+```bash
+python manage.py createsuperuser
+```
+
+---
+
+### 7. Coleta de Arquivos Estáticos
 
 ```bash
 python manage.py collectstatic
@@ -133,7 +150,7 @@ python manage.py collectstatic
 
 ---
 
-### 7. Rode o Servidor (ASGI/Uvicorn)
+### 8. Rode o Servidor (ASGI/Uvicorn)
 
 ```bash
 uvicorn campointeligente.asgi:application --reload
@@ -145,12 +162,18 @@ Acesse: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ## 📨 Endpoints e Documentação
 
-| Recurso                      | Endpoint                                   |
-|-----------------------------|--------------------------------------------|
-| Webhook WhatsApp (POST)     | `/api/v1/chatbot/webhook/`                |
-| Webchat (POST)              | `/api/v1/chatbot/webchat/`                |
-| Swagger (UI interativa)     | `/api/v1/swagger/`                         |
-| Redoc (Documentação limpa)  | `/api/v1/redoc/`                           |
+| Recurso                         | Endpoint                                   |
+|---------------------------------|--------------------------------------------|
+| **Chatbot**                     |                                            |
+| Webhook WhatsApp (POST)         | `/api/v1/chatbot/webhook/`                 |
+| Webchat (POST)                  | `/api/v1/chatbot/webchat/`                 |
+| **Painel de Controle**          |                                            |
+| Login de Administrador (POST)   | `/api/v1/panel/login/`                     |
+| Logout de Administrador (POST)  | `/api/v1/panel/logout/`                    |
+| Dados do Usuário Logado (GET)   | `/api/v1/panel/user-data/`                 |
+| **Documentação**                |                                            |
+| Swagger (UI interativa)         | `/api/v1/swagger/`                         |
+| Redoc (Documentação limpa)      | `/api/v1/redoc/`                           |
 
 ---
 
@@ -159,17 +182,19 @@ Acesse: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 ```
 API_campointeligente/
 │
-├── campointeligente/           # Configurações principais (settings.py, asgi.py, etc.)
+├── campointeligente/ # Configurações principais (settings.py, asgi.py, etc.)
 │
-├── chatbot/                    # App do chatbot (views, models, urls, etc.)
+├── chatbot/          # App do chatbot (views, models, services, etc.)
 │
-├── staticfiles/                # Arquivos estáticos coletados
+├── panel/            # App do painel de controle (views de auth, models, etc.)
 │
-├── manage.py                   # Entrada do projeto
+├── staticfiles/      # Arquivos estáticos coletados
 │
-├── .env                        # Configurações sensíveis (NÃO versionar)
+├── manage.py         # Entrada do projeto
 │
-└── requirements.txt            # Dependências do projeto
+├── .env              # Configurações sensíveis (NÃO versionar)
+│
+└── requirements.txt  # Dependências do projeto
 ```
 
 ---
