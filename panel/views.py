@@ -8,10 +8,13 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.conf import settings
 
+from chatbot.models import Organizacao, Administrador
+from .serializers import OrganizacaoSerializer, AdministradorCreateSerializer, AdministradorReadOnlySerializer
+
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -169,3 +172,39 @@ def password_reset_confirm_view(request):
         return Response({"success": "Sua senha foi redefinida com sucesso."}, status=status.HTTP_200_OK)
     else:
         return Response({"error": "O link é inválido ou já expirou."}, status=status.HTTP_400_BAD_REQUEST)
+    
+# --- VIEWS DE GESTÃO ---
+
+@api_view(['GET', 'POST'])
+@authentication_classes([CsrfExemptSessionAuthentication, BasicAuthentication])
+@permission_classes([IsAdminUser])
+def organizacoes_view(request):
+    if request.method == 'GET':
+        orgs = Organizacao.objects.all().order_by('nome')
+        serializer = OrganizacaoSerializer(orgs, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = OrganizacaoSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication, BasicAuthentication])
+@permission_classes([IsAdminUser])
+def administradores_create_view(request):
+    serializer = AdministradorCreateSerializer(data=request.data)
+    if serializer.is_valid():
+        administrador = serializer.save()
+        read_serializer = AdministradorReadOnlySerializer(administrador)
+        return Response(read_serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@authentication_classes([CsrfExemptSessionAuthentication, BasicAuthentication])
+@permission_classes([IsAdminUser])
+def administradores_list_view(request):
+    admins = Administrador.objects.all().order_by('nome')
+    serializer = AdministradorReadOnlySerializer(admins, many=True)
+    return Response(serializer.data)

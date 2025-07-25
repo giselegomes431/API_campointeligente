@@ -15,4 +15,11 @@ urlpatterns = [
     path('password/change/', views.password_change_view, name='api_password_change'),
     path('password/reset/', views.password_reset_request_view, name='api_password_reset_request'),
     path('password/reset/confirm/', views.password_reset_confirm_view, name='api_password_reset_confirm'),
+    
+    # Rotas para Organizações
+    path('organizacoes/', views.organizacoes_view, name='api_organizacoes'),
+
+    # Rotas para Administradores
+    path('administradores/create/', views.administradores_create_view, name='api_administradores_create'),
+    path('administradores/list/', views.administradores_list_view, name='api_administradores_list'),
 ]

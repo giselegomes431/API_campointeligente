@@ -1,5 +1,6 @@
 # chatbot/models.py
 from django.db import models
+from django.contrib.auth.models import User
 
 # =======================
 # TABELA DE ORGANIZAÇÕES
@@ -21,10 +22,10 @@ class Organizacao(models.Model):
 # TABELA DE ADMINISTRADORES
 # =========================
 class Administrador(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='administrador_profile', null=True, blank=True)
     organizacao = models.ForeignKey(Organizacao, on_delete=models.CASCADE, related_name='administradores')
     nome = models.CharField(max_length=255, null=False)
     email = models.EmailField(max_length=255, unique=True, null=False)
-    senha_hash = models.CharField(max_length=255, null=False) # Em um projeto real, usaríamos o sistema de usuários do Django
     cargo = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
