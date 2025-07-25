@@ -118,3 +118,12 @@ EVOLUTION_API_KEY = os.getenv('EVOLUTION_API_KEY')
 EVOLUTION_API_URL = os.getenv('EVOLUTION_API_URL')
 EVOLUTION_INSTANCE_NAME = os.getenv('EVOLUTION_INSTANCE_NAME')
 CORS_ALLOW_ALL_ORIGINS = True # Mantenha esta linha se estiver usando django-cors-headers
+
+# CONFIGURAÇÕES DE ENVIO DE EMAIL
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'startupcampointeligente@gmail.com'          # <-- SEU EMAIL GMAIL
+EMAIL_HOST_PASSWORD = 'mizzrjmansuxmjia' # <-- SUA SENHA DE APP
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
