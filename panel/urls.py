@@ -18,8 +18,10 @@ urlpatterns = [
     
     # Rotas para Organizações
     path('organizacoes/', views.organizacoes_view, name='api_organizacoes'),
+    path('organizacoes/<int:pk>/', views.organizacao_detail_view, name='api_organizacao_detail'),
 
     # Rotas para Administradores
     path('administradores/create/', views.administradores_create_view, name='api_administradores_create'),
     path('administradores/list/', views.administradores_list_view, name='api_administradores_list'),
+    path('administradores/<int:pk>/', views.administrador_detail_view, name='api_administrador_detail'),
 ]

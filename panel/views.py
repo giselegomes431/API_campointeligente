@@ -9,12 +9,12 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 from chatbot.models import Organizacao, Administrador
-from .serializers import OrganizacaoSerializer, AdministradorCreateSerializer, AdministradorReadOnlySerializer
+from .serializers import OrganizacaoSerializer, AdministradorCreateSerializer, AdministradorReadOnlySerializer, AdministradorUpdateSerializer
 
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -24,6 +24,14 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
     """
     def enforce_csrf(self, request):
         return  # Não faz nada, efetivamente desativando a verificação.
+    
+    
+class IsSuperUserOnly(BasePermission):
+    """
+    Permissão customizada para permitir acesso apenas a superusuários.
+    """
+    def has_permission(self, request, view):
+        return request.user and request.user.is_superuser
 
 # --- VIEWS DA API ---
 
@@ -177,7 +185,7 @@ def password_reset_confirm_view(request):
 
 @api_view(['GET', 'POST'])
 @authentication_classes([CsrfExemptSessionAuthentication, BasicAuthentication])
-@permission_classes([IsAdminUser])
+@permission_classes([IsSuperUserOnly])
 def organizacoes_view(request):
     if request.method == 'GET':
         orgs = Organizacao.objects.all().order_by('nome')
@@ -192,19 +200,78 @@ def organizacoes_view(request):
 
 @api_view(['POST'])
 @authentication_classes([CsrfExemptSessionAuthentication, BasicAuthentication])
-@permission_classes([IsAdminUser])
+@permission_classes([IsSuperUserOnly])
 def administradores_create_view(request):
     serializer = AdministradorCreateSerializer(data=request.data)
     if serializer.is_valid():
         administrador = serializer.save()
         read_serializer = AdministradorReadOnlySerializer(administrador)
         return Response(read_serializer.data, status=status.HTTP_201_CREATED)
+    
+    # ESTA LINHA CORRIGE O ERRO
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET'])
 @authentication_classes([CsrfExemptSessionAuthentication, BasicAuthentication])
-@permission_classes([IsAdminUser])
+@permission_classes([IsSuperUserOnly])
 def administradores_list_view(request):
     admins = Administrador.objects.all().order_by('nome')
     serializer = AdministradorReadOnlySerializer(admins, many=True)
     return Response(serializer.data)
+
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsSuperUserOnly])
+def organizacao_detail_view(request, pk):
+    try:
+        organizacao = Organizacao.objects.get(pk=pk)
+    except Organizacao.DoesNotExist:
+        return Response({"error": "Organização não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = OrganizacaoSerializer(organizacao)
+        return Response(serializer.data)
+
+    elif request.method in ['PUT', 'PATCH']:
+        # O 'partial=True' é o que permite o PATCH (atualização parcial)
+        serializer = OrganizacaoSerializer(organizacao, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        organizacao.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# --- NOVA VIEW PARA DETALHES, EDIÇÃO E EXCLUSÃO DE ADMINISTRADOR ---
+
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsSuperUserOnly])
+def administrador_detail_view(request, pk):
+    try:
+        administrador = Administrador.objects.get(pk=pk)
+    except Administrador.DoesNotExist:
+        return Response({"error": "Administrador não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = AdministradorReadOnlySerializer(administrador)
+        return Response(serializer.data)
+
+    elif request.method in ['PUT', 'PATCH']:
+        serializer = AdministradorUpdateSerializer(administrador, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            # Retorna os dados atualizados usando o serializer de leitura
+            read_serializer = AdministradorReadOnlySerializer(serializer.instance)
+            return Response(read_serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        # Apaga o perfil Administrador e o User associado
+        if administrador.user:
+            administrador.user.delete()
+        administrador.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
