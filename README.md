@@ -4,7 +4,7 @@ Este repositório contém o backend do projeto **Campo Inteligente**, desenvolvi
 
 1. **Chatbot Inteligente**: Processa mensagens de múltiplos canais (web e WhatsApp), integra-se com serviços externos (OpenAI, OpenWeather) e gerencia os dados dos usuários agrícolas.
 
-2. **Painel de Controle**: Fornece endpoints seguros para um painel administrativo (desenvolvido separadamente em Next.js) visualizar dados, gerir usuários e extrair insights.
+2. **Painel de Controle**: Fornece endpoints seguros para um painel administrativo (desenvolvido separadamente em Next.js) visualizar dados, gerir usuários, extrair insights e e lidar com autenticação e recuperação de contas.
 ---
 
 ## 🚀 Funcionalidades Principais
@@ -17,11 +17,12 @@ Este repositório contém o backend do projeto **Campo Inteligente**, desenvolvi
 
 ✅ Módulo Painel de Controle (panel):
 - Endpoints de API seguros para autenticação de administradores.
+- Funcionalidade completa de troca e recuperação de senha via API.
 - Rotas protegidas para fornecer dados de usuários e outras métricas ao frontend.
 
 ✅ Gerenciamento de Dados:
 - Registro e atualização de usuários e suas propriedades.
-- Estrutura extensível para novas funções (ex: controle de rebanho, estoque, safras).
+- Estrutura extensível para novas funções (ex: estoque, safras).
 
 ---
 
@@ -117,6 +118,9 @@ OPENWEATHER_API_KEY='sua_chave_openweather'
 EVOLUTION_API_KEY='sua_chave_evolution'
 EVOLUTION_API_URL='http://localhost:8080'
 EVOLUTION_INSTANCE_NAME='nome_da_instancia'
+
+EMAIL_HOST_USER='seu_email@gmail.com'
+EMAIL_HOST_PASSWORD='sua_senha_de_app_do_gmail'
 ```
 
 > ⚠️ **Importante:** não suba esse arquivo para o GitHub. Adicione `.env` ao seu `.gitignore`.
@@ -162,18 +166,21 @@ Acesse: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ## 📨 Endpoints e Documentação
 
-| Recurso                         | Endpoint                                   |
-|---------------------------------|--------------------------------------------|
-| **Chatbot**                                                                  |
-| Webhook WhatsApp (POST)         | `/api/v1/chatbot/webhook/`                 |
-| Webchat (POST)                  | `/api/v1/chatbot/webchat/`                 |
-| **Painel de Controle**                                                       |
-| Login de Administrador (POST)   | `/api/v1/panel/login/`                     |
-| Logout de Administrador (POST)  | `/api/v1/panel/logout/`                    |
-| Dados do Usuário Logado (GET)   | `/api/v1/panel/user-data/`                 |
-| **Documentação**                                                             |
-| Swagger (UI interativa)         | `/api/v1/swagger/`                         |
-| Redoc (Documentação limpa)      | `/api/v1/redoc/`                           |
+| Recurso                               | Endpoint                                   |
+|---------------------------------------|--------------------------------------------|
+| **Chatbot**                                                                        |
+| Webhook WhatsApp (POST)               | `/api/v1/chatbot/webhook/`                 |
+| Webchat (POST)                        | `/api/v1/chatbot/webchat/`                 |
+| **Painel de Controle**                                                             |
+| Login de Administrador (POST)         | `/api/v1/panel/login/`                     |
+| Logout de Administrador (POST)        | `/api/v1/panel/logout/`                    |
+| Dados do Usuário Logado (GET)         | `/api/v1/panel/user-data/`                 |
+| Trocar Senha (POST, autenticado)      | `/api/v1/panel/password/change/`           |
+| Pedido de Recuperação de Senha (POST) | `/api/v1/panel/password/reset/`            |
+| Confirmar Nova Senha (POST)           | `/api/v1/panel/password/reset/confirm/`    |
+| **Documentação**                                                                   |
+| Swagger (UI interativa)               | `/api/v1/swagger/`                         |
+| Redoc (Documentação limpa)            | `/api/v1/redoc/`                           |
 
 ---
 
