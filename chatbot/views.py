@@ -37,7 +37,7 @@ def webchat_view(request):
     user_id = f"webchat_{session_id}"
     
     try:
-        location_data = {"latitude": data['latitude'], "longitude": data['longitude']} if 'latitude' in data else None
+        location_data = {"latitude": data['latitude'], "longitude": data['longitude']} if 'latitude' in data and 'longitude' in data else None
         
         response_text = async_to_sync(chatbot_service.process_message)(
             user_id, message_text, "Visitante", 'webchat', location_data
@@ -58,38 +58,42 @@ def webchat_view(request):
 @permission_classes([])
 def webhook_view(request):
     logger.info("Webhook recebido: %s", request.data)
+
+    # A lógica de validação agora está centralizada no serializer.
+    # A view apenas tenta validar e, se falhar, ignora o evento.
     serializer = WebhookPayloadSerializer(data=request.data)
     if not serializer.is_valid():
-        logger.error("Erro de validação (Webhook): %s", serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Se a validação falhar, é porque não é uma mensagem que nos interessa.
+        # Retornamos 200 OK para que a API não continue a reenviar o webhook.
+        logger.warning("Payload inválido ou ignorado: %s", serializer.errors)
+        return Response({"status": "Evento ignorado ou inválido"}, status=status.HTTP_200_OK)
 
-    data = serializer.validated_data
+    validated_data = serializer.validated_data
     
     try:
-        data_payload = data.get('data', {})
-        key_data = data_payload.get('key', {})
+        # O serializer já garantiu que 'data' é um dicionário (objeto da mensagem), não mais uma lista.
+        data_payload = validated_data.get('data', {})
         
-        if data.get('event') != 'messages.upsert' or key_data.get('fromMe', False):
-            return Response({"status": "ignorado"}, status=status.HTTP_200_OK)
-
+        key_data = data_payload.get('key', {})
         user_id = key_data.get('remoteJid')
-        if not user_id:
-            return Response({"status": "ignorado"}, status=status.HTTP_200_OK)
-
-        push_name = data_payload.get('pushName', 'Usuário')
+        
+        push_name = data_payload.get('pushName', 'Utilizador')
         message_data = data_payload.get('message', {})
         message_text = ""
         location_data = None
 
-        if 'conversation' in message_data:
-            message_text = message_data.get('conversation', '')
+        if 'conversation' in message_data and message_data.get('conversation'):
+            message_text = message_data['conversation']
         elif 'extendedTextMessage' in message_data:
             message_text = message_data.get('extendedTextMessage', {}).get('text', '')
         elif 'locationMessage' in message_data:
             loc_msg = message_data['locationMessage']
             if 'degreesLatitude' in loc_msg and 'degreesLongitude' in loc_msg:
                 location_data = {"latitude": loc_msg['degreesLatitude'], "longitude": loc_msg['degreesLongitude']}
-        
+        else:
+            logger.info(f"Tipo de mensagem não suportado recebido de {user_id}.")
+            return Response({"status": "Tipo de mensagem não suportado"}, status=status.HTTP_200_OK)
+
         response_text = async_to_sync(chatbot_service.process_message)(
             user_id, message_text, push_name, 'whatsapp', location_data
         )
