@@ -12,8 +12,8 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['d60fa466aac5.ngrok-free.app']
+APPEND_SLASH = False
 
 # --- Aplicações Instaladas ---
 INSTALLED_APPS = [
