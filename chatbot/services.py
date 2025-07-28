@@ -53,9 +53,11 @@ class ChatbotService:
     async def send_whatsapp_message(self, phone_number: str, text: str):
         logger.info(f"Tentando enviar mensagem para {phone_number} via Evolution API.")
         
+        corrected_text = text.replace('\\n', '\n')
+        
         url = f"{settings.EVOLUTION_API_URL}/message/sendText/{settings.EVOLUTION_INSTANCE_NAME}"
         headers = {"apikey": settings.EVOLUTION_API_KEY}
-        payload = {"number": phone_number, "textMessage": {"text": text}}
+        payload = {"number": phone_number, "textMessage": {"text": corrected_text}}
         
         logger.debug(f"URL da API: {url}")
         logger.debug(f"Payload de envio: {payload}")
